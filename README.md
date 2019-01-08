@@ -22,7 +22,8 @@
  ### Library `great_circle_calculator`
  
     distance_between_points(p1, p2, unit='meters', haversine=False):
-        This function computes the distance between two points in the unit given in the unit parameter.  It will calculate the distance using the law of cosines unless the user specifies haversine to be true.
+        This function computes the distance between two points in the unit given in the unit parameter.  
+        It will calculate the distance using the law of cosines unless the user specifies haversine to be true.
             :param p1: tuple point of (lon, lat)
             :param p2: tuple point of (lon, lat)
             :param unit: unit of measurement. List can be found in constants.eligible_units
