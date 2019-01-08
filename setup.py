@@ -11,7 +11,7 @@ setuptools.setup(
     description="A collection of functions to calculate attributes of the great circle",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/seangrogan/TODO",
+    url="https://github.com/seangrogan/great_circle_calculator",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
