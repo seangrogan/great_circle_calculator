@@ -32,10 +32,12 @@ def cos(x):
 
 
 def asin(x):
+    x = _test_domain(x)
     return math.asin(x)
 
 
 def acos(x):
+    x = _test_domain(x)
     return math.acos(x)
 
 
@@ -45,3 +47,11 @@ def atan2(y, x):
 
 def sqrt(x):
     return math.sqrt(x)
+
+
+def _test_domain(x):
+    if x > 1:
+        return 1
+    if x < -1:
+        return -1
+    return x
