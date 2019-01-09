@@ -110,5 +110,5 @@ def point_given_start_and_bearing(p1, course, distance, unit='meters'):
     lat2 = asin(sin(lat1) * cos(delta) + cos(lat1) * sin(delta) * cos(brng))
     lon2 = lon1 + atan2(sin(brng) * sin(delta) * cos(lat1), cos(delta) - sin(lat1) * sin(lat2))
     lon2 = (_radians_to_degrees(lon2) + 540) % 360 - 180
-    p2 = _point_to_degrees((lon2, lat2))
+    p2 = (lon2, _radians_to_degrees(lat2))
     return p2
