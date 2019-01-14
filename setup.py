@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="great_circle_calculator",
-    version="1.0.1.post1",
+    version="1.0.2",
     author="Sean Grogan",
     author_email="sean.grogan@gmail.com",
     description="A collection of functions to calculate attributes of the great circle",
