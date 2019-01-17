@@ -4,13 +4,14 @@ from great_circle_calculator.__error_checking import _error_check_point
 from great_circle_calculator._constants import *
 
 
-def distance_between_points(p1, p2, unit='meters', haversine=False):
+def distance_between_points(p1, p2, unit='meters', haversine=True):
     """ This function computes the distance between two points in the unit given in the unit parameter.  It will
-    calculate the distance using the law of cosines unless the user specifies haversine to be true.
+    calculate the distance using the haversine unless the user specifies haversine to be False.  Then law of cosines
+    will be used
     :param p1: tuple point of (lon, lat)
     :param p2: tuple point of (lon, lat)
     :param unit: unit of measurement. List can be found in constants.eligible_units
-    :param haversine: False (default) uses law of cosines, True uses haversine
+    :param haversine: True (default) uses haversine distance, False uses law of cosines
     :return: Distance between p1 and p2 in the units specified.
     """
     lon1, lat1 = _point_to_radians(_error_check_point(p1))
