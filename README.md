@@ -1,6 +1,5 @@
 # Great Circle Calculator
 
-
  This is a collection of equations and formulas that I've been using across my many projects to compute various 
  distances using great circle calculations. The formulas here were adapted into python from 
  [here](https://www.movable-type.co.uk/scripts/latlong.html) and [here](http://www.edwilliams.org/avform.htm).   
@@ -40,53 +39,59 @@ The functions are [distance_between_points](#distance_between_points), [bearing_
 
 #### `distance_between_points()`
 
-Function `distance_between_points(p1, p2, unit='meters', haversine=True)` computes the distance between two points in the unit given in the unit parameter.  It will calculate the distance using the law of cosines unless the user specifies `haversine` to be `true`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.  `haversine=True` uses the [haversine](https://en.wikipedia.org/wiki/Haversine_formula) formula, which is consideered superior for short distances (which is my often use case).  Changing it to `haversine=False` yeilds the [law of cosines](https://en.wikipedia.org/wiki/Spherical_law_of_cosines) which typically, will have a quicker computational time.  
+Function `distance_between_points(p1, p2, unit='meters', haversine=True)` computes the distance between two points in the unit given in the unit parameter.  It will calculate the distance using the law of cosines unless the user specifies `haversine` to be `true`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.  `haversine=True` uses the [haversine](https://en.wikipedia.org/wiki/Haversine_formula) formula, which is consideered superior for short distances (which is my often use case).  Changing it to `haversine=False` yeilds the [law of cosines](https://en.wikipedia.org/wiki/Spherical_law_of_cosines) which, typically, will have a quicker computational time.  
 
+#### `bearing_at_p1()`
 
-    bearing_at_p1(p1, p2):
-        This function computes the bearing (i.e. course) at p1 given a destination of p2.  Use in conjunction with
-        midpoint(*) and intermediate_point(*) to find the course along the route.  Use bearing_at_p2(*) to find the bearing
-        at the endpoint
-            :param p1: tuple point of (lon, lat)
-            :param p2: tuple point of (lon, lat)
-            :return: Course, in degrees
-            
-    bearing_at_p2(p1, p2):
-        This function computes the bearing (i.e. course) at p2 given a starting point of p1.  Use in conjunction with
-        midpoint(*) and intermediate_point(*) to find the course along the route.  Use bearing_at_p1(*) to find the bearing
-        at the endpoint
-            :param p1: tuple point of (lon, lat)
-            :param p2: tuple point of (lon, lat)
-            :return: Course, in degrees
+Function  `bearing_at_p1(p1, p2)` computes the bearing (i.e. course) at p1 given a destination of p2.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p2()`](#bearing_at_p2) to find the bearing at the endpoint, `p2`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  
+
+Example to find a course enroute:
+
+```python
+import great_circle_calculator.great_circle_calculator as gcc
+""" This code snippit will find the the course at a point p3 which is 20% the way between points p1 and p2
+"""
+p1, p2 = (lon1, lat1), (lon2, lat2)
+frac_along_route = 0.2
+course_enroute = gcc.bearing_at_p1(gcc.intermediate_point(p1, p2, frac_along_route), p2)
+```
+#### `bearing_at_p2`
+
+Function  `bearing_at_p2(p1, p2)` computes the bearing (i.e. course) at p2 given a start of p1.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p1()`](#bearing_at_p1) to find the bearing at the starting point, `p1`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  
         
-    
-    midpoint(p1, p2):
-        This is the half-way point along a great circle path between the two points.
-            :param p1: tuple point of (lon, lat)
-            :param p2: tuple point of (lon, lat)
-            :return: point (lon, lat)
-            
-    intermediate_point(p1, p2, fraction=0.5):
-        This function calculates the intermediate point along the course laid out by p1 to p2.  fraction is the fraction
-        of the distance between p1 and p2, where 0 is p1, 0.5 is equivalent to midpoint(*), and 1 is p2.
-            :param p1: tuple point of (lon, lat)
-            :param p2: tuple point of (lon, lat)
-            :param fraction: the fraction of the distance along the path.
-            :return: point (lon, lat)
+#### midpoint()
+
+Function `midpoint(p1, p2)` is the half-way point along a great circle path between the two points.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  For example, say `p3 = midpoint(p1, p2)`, `distance_between_points(p1, p3) == distance_between_points(p2, p3)` 
+
+#### intermediate_point()
+
+Function intermediate_point(p1, p2, fraction=0.5) an intermediate point along the course laid out by `p1` to `p2` given the fractional distance.  `fraction` is the fraction of the distance between `p1` and `p2`, where 0 is `p1`, 0.5 is equivalent to [`midpoint()`](#midpoint), and 1 is `p2`.  
+
+#### point_given_start_and_bearing()
         
-    point_given_start_and_bearing(p1, course, distance, unit='meters'):
-        Given a start point, initial bearing, and distance, this will calculate the destina­tion point and final
-        bearing travelling along a (shortest distance) great circle arc.
-            :param p1: tuple point of (lon, lat)
-            :param course: Course, in degrees
-            :param distance: a length in unit
-            :param unit: unit of measurement. List can be found in constants.eligible_units
-            :return: point (lon, lat)
+Function point_given_start_and_bearing(p1, course, distance, unit='meters') is given a start point `p1`, initial bearing `course`, and distance `distance`, this will calculate the destination point bearing travelling along a (shortest distance) great circle arc.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.
     
  ### Library `compass`
  
- This lets me call something like `Compass.east` so I can get 90deg.  I thought it helped with code readability 
+ This libaray was created to let me call, say `Compass.east` so I can get 90deg.  I thought it helped with code readability 
  at first, kept it because it might be useful...   
+ 
+ It has two classes called `CompassSimple` and `CompassComplex`.  `CompassComplex` is still in the todo list but it contains more information about each compass point.  
+ 
+ To see the eligble points, see [here](https://en.wikipedia.org/wiki/Points_of_the_compass#32_compass_points).  Simply use the terms in "Compass point", use lower case and underscores where there are spaces or dashes.  Alternatively you may use the "Abbreviation" with the appropriate case to call the same value.  
+ 
+ To use `CompassSimple`:
+ 
+ ```python
+import great_circle_calculator.CompassSimple as compass
+
+print(compass.east)  # prints 90
+print(compass.north)  # prints 0
+print(compass.northwest_by_north)  # prints 326.250
+print(compass.SEbE)  # Southeast by east, prints 123.750
+print(compass.SWbS == compass.southwest_by_south)  # prints True
+```
+
   
  ### Library `_constants`
  
@@ -112,9 +117,18 @@ Function `distance_between_points(p1, p2, unit='meters', haversine=True)` comput
  pass the sanity check, such as lat > 90 and lon <= 90, it will, right now, swap the coordinates.  Not sure if that's 
  the best for everyone, but I am mostly working on projects where the lon is (approximately) > 90 
  
- ## And finally:
+ ## And finally...
  
- Last updated Jan 8, 2018.  Hit me up here for questions and critiques.  
+ Package last updated Jan 14, 2019.  Readme last updated Jan 17, 2019.  
+ 
+ ## Change Log
+ 
+ * 1.0.2 - squished an error in the intermediate function. The number of errors has been embarrassing. I hope you won't judge me too harshly.  
+ * 1.0.1.post1 - includes a domain checker for `asin()` and `acos()` because rounding errors can cause the function to be out of range.
+ * 1.0.post1 - I screwed up the numbering order, still new at this... please ignore.
+ * 1.0.1 - Fixed an error in the `point_given_start_and_bearing`[#point_given_start_and_bearing]
+ * 1.0.0 - First Edition, inital commit, etc.
+ 
  
    
  
