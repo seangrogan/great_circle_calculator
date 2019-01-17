@@ -126,7 +126,7 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  * 1.0.2 - squished an error in the intermediate function. The number of errors has been embarrassing. I hope you won't judge me too harshly.  
  * 1.0.1.post1 - includes a domain checker for `asin()` and `acos()` because rounding errors can cause the function to be out of range.
  * 1.0.post1 - I screwed up the numbering order, still new at this... please ignore.
- * 1.0.1 - Fixed an error in the `point_given_start_and_bearing`[#point_given_start_and_bearing]
+ * 1.0.1 - Fixed an error in the (`point_given_start_and_bearing`)[#point_given_start_and_bearing]
  * 1.0.0 - First Edition, inital commit, etc.
  
  
