@@ -37,11 +37,11 @@ where * can be a specific function (or left as * for all the functions)
 
 The functions are [distance_between_points](#distance_between_points), [bearing_at_p1](#bearing_at_p1), [bearing_at_p2](#bearing_at_p2), [midpoint](#midpoint),[ intermediate_point](#intermediate_point), [point_given_start_and_bearing](#point_given_start_and_bearing)
 
-#### `distance_between_points()`
+#### Function `distance_between_points()`
 
 Function `distance_between_points(p1, p2, unit='meters', haversine=True)` computes the distance between two points in the unit given in the unit parameter.  It will calculate the distance using the law of cosines unless the user specifies `haversine` to be `true`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.  `haversine=True` uses the [haversine](https://en.wikipedia.org/wiki/Haversine_formula) formula, which is consideered superior for short distances (which is my often use case).  Changing it to `haversine=False` yeilds the [law of cosines](https://en.wikipedia.org/wiki/Spherical_law_of_cosines) which, typically, will have a quicker computational time.  
 
-#### `bearing_at_p1()`
+#### Function `bearing_at_p1()`
 
 Function  `bearing_at_p1(p1, p2)` computes the bearing (i.e. course) at p1 given a destination of p2.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p2()`](#bearing_at_p2) to find the bearing at the endpoint, `p2`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  
 
@@ -55,19 +55,19 @@ p1, p2 = (lon1, lat1), (lon2, lat2)
 frac_along_route = 0.2
 course_enroute = gcc.bearing_at_p1(gcc.intermediate_point(p1, p2, frac_along_route), p2)
 ```
-#### `bearing_at_p2`
+#### Function `bearing_at_p2`
 
 Function  `bearing_at_p2(p1, p2)` computes the bearing (i.e. course) at p2 given a start of p1.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p1()`](#bearing_at_p1) to find the bearing at the starting point, `p1`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  
         
-#### midpoint()
+#### Function `midpoint()`
 
 Function `midpoint(p1, p2)` is the half-way point along a great circle path between the two points.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  For example, say `p3 = midpoint(p1, p2)`, `distance_between_points(p1, p3) == distance_between_points(p2, p3)` 
 
-#### intermediate_point()
+#### Function `intermediate_point()`
 
 Function intermediate_point(p1, p2, fraction=0.5) an intermediate point along the course laid out by `p1` to `p2` given the fractional distance.  `fraction` is the fraction of the distance between `p1` and `p2`, where 0 is `p1`, 0.5 is equivalent to [`midpoint()`](#midpoint), and 1 is `p2`.  
 
-#### point_given_start_and_bearing()
+#### Function `point_given_start_and_bearing()`
         
 Function point_given_start_and_bearing(p1, course, distance, unit='meters') is given a start point `p1`, initial bearing `course`, and distance `distance`, this will calculate the destination point bearing travelling along a (shortest distance) great circle arc.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.
     
@@ -103,7 +103,7 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  
  To see the available units, call `_constants.eligible_units` and a list of the units that are available will be given. 
  
- ###### eligible_units
+ ###### `eligible_units`
  
  To see the available units, call `_constants.eligible_units` and a list of the units that are available will be given. 
  
