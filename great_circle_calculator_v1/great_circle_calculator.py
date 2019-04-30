@@ -1,44 +1,7 @@
-from math import cos, sin, atan2, sqrt
-from measurement.measures import Distance
-
-from great_circle_calculator.__deg_rad_converter import _point_to_radians, _radians_to_degrees, _point_to_degrees, \
+from great_circle_calculator_v1.__conversion import _point_to_radians, _point_to_degrees, _radians_to_degrees, \
     _degrees_to_radians
-from great_circle_calculator.__error_checking import _check_points, _check_point
-from great_circle_calculator.__gcc_subfiles import __haversine, __spherical_law_of_cosines, asin
-
-
-class Defaults:
-    sphere_unit = 'meter'
-    sphere_radius_value = 6_371_000
-    sphere_radius = Distance(**{sphere_unit: sphere_radius_value})
-
-
-def apply_defaults():
-    global sphere_radius
-    sphere_radius = Distance(**{sphere_unit: sphere_radius_value})
-
-
-def set_default_value(radius=None, unit=None):
-    if unit is None:
-        unit = Defaults.sphere_unit
-    if radius is None:
-        radius = Defaults.sphere_radius_value
-    global sphere_unit
-    global sphere_radius_value
-    sphere_unit = sphere_unit
-    sphere_radius_value = radius
-    apply_defaults()
-
-
-def reset_to_default_values():
-    set_default_value(radius=None, unit=None)
-
-
-sphere_unit = Defaults.sphere_unit
-sphere_radius_value = Defaults.sphere_radius_value
-sphere_radius = Distance(0)
-
-apply_defaults()
+from great_circle_calculator_v1.__error_checking import _error_check_point
+import decimal
 
 
 def distance_between_points(p1, p2, unit='meters', haversine=True):
@@ -51,14 +14,19 @@ def distance_between_points(p1, p2, unit='meters', haversine=True):
     :param haversine: True (default) uses haversine distance, False uses law of cosines
     :return: Distance between p1 and p2 in the units specified.
     """
-    _check_points(p1, p2)
-    lon1, lat1 = _point_to_radians(p1)
-    lon2, lat2 = _point_to_radians(p2)
-    r_earth = getattr(sphere_radius, unit, 'meters')
+    lon1, lat1 = _point_to_radians(_error_check_point(p1))
+    lon2, lat2 = _point_to_radians(_error_check_point(p2))
+    r_earth = getattr(radius_earth, unit, 'meters')
     if haversine:
-        return __haversine(lon1, lat1, lon2, lat2, r_earth)
-    else:
-        return __spherical_law_of_cosines(lon1, lat1, lon2, lat2, r_earth)
+        # Haversine
+        d_lat, d_lon = lat2 - lat1, lon2 - lon1
+        a = sin(d_lat / 2) * sin(d_lat / 2) + cos(lat1) * cos(lat2) * sin(d_lon / 2) * sin(d_lon / 2)
+        c = 2 * atan2(sqrt(a), sqrt((1 - a)))
+        dist = r_earth * c
+        return dist
+    # Spherical Law Of Cosines
+    dist = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)) * r_earth
+    return dist
 
 
 def bearing_at_p1(p1, p2):
@@ -69,9 +37,8 @@ def bearing_at_p1(p1, p2):
     :param p2: tuple point of (lon, lat)
     :return: Course, in degrees
     """
-    _check_points(p1, p2)
-    lon1, lat1 = _point_to_radians(p1)
-    lon2, lat2 = _point_to_radians(p2)
+    lon1, lat1 = _point_to_radians(_error_check_point(p1))
+    lon2, lat2 = _point_to_radians(_error_check_point(p2))
     x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2 - lon1)
     y = sin(lon2 - lon1) * cos(lat2)
     course = atan2(y, x)
@@ -95,9 +62,8 @@ def midpoint(p1, p2):
     :param p2: tuple point of (lon, lat)
     :return: point (lon, lat)
     """
-    _check_points(p1, p2)
-    lon1, lat1 = _point_to_radians(p1)
-    lon2, lat2 = _point_to_radians(p2)
+    lon1, lat1 = _point_to_radians(_error_check_point(p1))
+    lon2, lat2 = _point_to_radians(_error_check_point(p2))
     b_x = cos(lat2) * cos(lon2 - lon1)
     b_y = cos(lat2) * sin(lon2 - lon1)
     lat3 = atan2(sin(lat1) + sin(lat2), sqrt((cos(lat1) + b_x) * (cos(lat1) + b_x) + b_y * b_y))
@@ -116,10 +82,9 @@ def intermediate_point(p1, p2, fraction=0.5):
     :param fraction: the fraction of the distance along the path.
     :return: point (lon, lat)
     """
-    _check_points(p1, p2)
-    lon1, lat1 = _point_to_radians(p1)
-    lon2, lat2 = _point_to_radians(p2)
-    delta = distance_between_points(p1, p2, 'meters') / sphere_radius.meters
+    lon1, lat1 = _point_to_radians(_error_check_point(p1))
+    lon2, lat2 = _point_to_radians(_error_check_point(p2))
+    delta = distance_between_points(p1, p2) / radius_earth.meters
     a = sin((1 - fraction) * delta) / sin(delta)
     b = sin(fraction * delta) / sin(delta)
     x = a * cos(lat1) * cos(lon1) + b * cos(lat2) * cos(lon2)
@@ -139,13 +104,19 @@ def point_given_start_and_bearing(p1, course, distance, unit='meters'):
     :param unit: unit of measurement. List can be found in constants.eligible_units
     :return: point (lon, lat)
     """
-    _check_point(p1)
-    lon1, lat1 = _point_to_radians(p1)
+    lon1, lat1 = _point_to_radians(_error_check_point(p1))
     brng = _degrees_to_radians(course)
-    r_earth = getattr(sphere_radius, unit, 'meters')
+    r_earth = getattr(radius_earth, unit, 'meters')
     delta = distance / r_earth
     lat2 = asin(sin(lat1) * cos(delta) + cos(lat1) * sin(delta) * cos(brng))
     lon2 = lon1 + atan2(sin(brng) * sin(delta) * cos(lat1), cos(delta) - sin(lat1) * sin(lat2))
     lon2 = (_radians_to_degrees(lon2) + 540) % 360 - 180
     p2 = (lon2, _radians_to_degrees(lat2))
     return p2
+
+def point_to_decimal(point):
+    d_pt = (decimal.Decimal(i) for i in point)
+    return d_pt
+def decimal_to_float(point):
+    d_pt = (float(i) for i in point)
+    return d_pt

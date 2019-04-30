@@ -1,4 +1,7 @@
-from great_circle_calculator_v1 import _error_check_point
+import decimal
+from math import pi
+
+from great_circle_calculator.__error_checking import _check_point
 
 
 def _degrees_to_radians(degrees):
@@ -6,7 +9,7 @@ def _degrees_to_radians(degrees):
     :param degrees: decimal degrees
     :return: radians
     """
-    return pi * degrees / 180
+    return decimal.Decimal(pi) * decimal.Decimal(degrees) / decimal.Decimal(180)
 
 
 def _radians_to_degrees(radians):
@@ -14,11 +17,11 @@ def _radians_to_degrees(radians):
     :param radians: decimal degrees
     :return: radians
     """
-    return 180 * radians / pi
+    return decimal.Decimal(180) * decimal.Decimal(radians) / decimal.Decimal(pi)
 
 
 def _point_to_radians(point):
-    point = _error_check_point(point)
+    point = _check_point(point)
     return (_degrees_to_radians(point[0]), _degrees_to_radians(point[1]))
 
 

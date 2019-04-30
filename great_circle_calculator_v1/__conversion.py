@@ -1,13 +1,12 @@
-from great_circle_calculator._constants import *
-from great_circle_calculator.__error_checking import _error_check_point
-
+from great_circle_calculator_v1.__error_checking import _error_check_point
+import decimal
 
 def _degrees_to_radians(degrees):
     """ Converts the degrees into radians
     :param degrees: decimal degrees
     :return: radians
     """
-    return pi * degrees / 180
+    return decimal.Decimal(pi) * degrees / decimal.Decimal(180)
 
 
 def _radians_to_degrees(radians):
@@ -15,7 +14,7 @@ def _radians_to_degrees(radians):
     :param radians: decimal degrees
     :return: radians
     """
-    return 180 * radians / pi
+    return decimal.Decimal(180) * radians / decimal.Decimal(pi)
 
 
 def _point_to_radians(point):

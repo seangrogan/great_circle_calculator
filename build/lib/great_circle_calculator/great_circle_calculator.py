@@ -1,7 +1,6 @@
-from great_circle_calculator.__conversion import _point_to_radians, _point_to_degrees, _radians_to_degrees, \
+from great_circle_calculator_v1.__conversion import _point_to_radians, _point_to_degrees, _radians_to_degrees, \
     _degrees_to_radians
-from great_circle_calculator.__error_checking import _error_check_point
-from great_circle_calculator._constants import *
+from great_circle_calculator_v1 import _error_check_point
 
 
 def distance_between_points(p1, p2, unit='meters', haversine=True):
