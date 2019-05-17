@@ -1,10 +1,12 @@
 from math import cos, sin, atan2, sqrt
+
 from measurement.measures import Distance
 
 from great_circle_calculator.__deg_rad_converter import _point_to_radians, _radians_to_degrees, _point_to_degrees, \
     _degrees_to_radians
 from great_circle_calculator.__error_checking import _check_points, _check_point
-from great_circle_calculator.__gcc_subfiles import __haversine, __spherical_law_of_cosines, asin
+from great_circle_calculator.__gcc_subfiles import __haversine, __spherical_law_of_cosines, asin, _midpoint_lat, \
+    _midpoint_lon
 
 
 class Defaults:
@@ -41,7 +43,7 @@ sphere_radius = Distance(0)
 apply_defaults()
 
 
-def distance_between_points(p1, p2, unit='meters', haversine=True):
+def distance_between_points(p1, p2, unit='meters', *, haversine=True):
     """ This function computes the distance between two points in the unit given in the unit parameter.  It will
     calculate the distance using the haversine unless the user specifies haversine to be False.  Then law of cosines
     will be used
@@ -100,11 +102,7 @@ def midpoint(p1, p2):
     lon2, lat2 = _point_to_radians(p2)
     b_x = cos(lat2) * cos(lon2 - lon1)
     b_y = cos(lat2) * sin(lon2 - lon1)
-    lat3 = atan2(sin(lat1) + sin(lat2), sqrt((cos(lat1) + b_x) * (cos(lat1) + b_x) + b_y * b_y))
-    lon3 = lon1 + atan2(b_y, cos(lat1) + b_x)
-    lat3 = _radians_to_degrees(lat3)
-    lon3 = (_radians_to_degrees(lon3) + 540) % 360 - 180
-    p3 = (lon3, lat3)
+    p3 = (_midpoint_lon(lon1, b_y, lat1, b_x), _midpoint_lat(lat1, lat2, b_x, b_y))
     return p3
 
 

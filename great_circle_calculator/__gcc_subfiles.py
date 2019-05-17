@@ -1,5 +1,6 @@
 from math import sin, cos, atan2, sqrt, acos, asin as _asin, atan as _atan
 
+from great_circle_calculator.__deg_rad_converter import _radians_to_degrees
 from great_circle_calculator.__error_checking import _test_domain
 
 
@@ -22,3 +23,15 @@ def asin(x):
 
 def atan(x):
     _atan(_test_domain(x))
+
+
+def _midpoint_lat(lat1, lat2, b_x, b_y):
+    lat = atan2(sin(lat1) + sin(lat2), sqrt((cos(lat1) + b_x) * (cos(lat1) + b_x) + b_y * b_y))
+    lat = _radians_to_degrees(lat)
+    return lat
+
+
+def _midpoint_lon(lon1, b_y, lat1, b_x):
+    lon = lon1 + atan2(b_y, cos(lat1) + b_x)
+    lon = (_radians_to_degrees(lon) + 540) % 360 - 180
+    return lon
