@@ -39,7 +39,7 @@ The functions are [distance_between_points](#distance_between_points), [bearing_
 
 #### Function `distance_between_points()`
 
-Function `distance_between_points(p1, p2, unit='meters', haversine=True)` computes the distance between two points in the unit given in the unit parameter.  It will calculate the distance using the law of cosines unless the user specifies `haversine` to be `true`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.  `haversine=True` uses the [haversine](https://en.wikipedia.org/wiki/Haversine_formula) formula, which is consideered superior for short distances (which is my often use case).  Changing it to `haversine=False` yeilds the [law of cosines](https://en.wikipedia.org/wiki/Spherical_law_of_cosines) which, typically, will have a quicker computational time.  
+Function `distance_between_points(p1, p2, unit='meters', haversine=True)` computes the distance between two points in the unit given in the unit parameter.  It will calculate the distance using the law of cosines unless the user specifies `haversine` to be `true`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees (That is, a tuple of float values, the library cannot handle DMS data).  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.  `haversine=True` uses the [haversine](https://en.wikipedia.org/wiki/Haversine_formula) formula, which is consideered superior for short distances (which is my often use case).  Changing it to `haversine=False` yeilds the [law of cosines](https://en.wikipedia.org/wiki/Spherical_law_of_cosines) which, typically, will have a quicker computational time.  
 
 #### Function `bearing_at_p1()`
 
@@ -123,7 +123,7 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  
  ## Change Log
  
- * 1.2.0 - If the user sends a point that is `decimal` data type, it will convert to a tuple of `float` types 
+ * 1.2.0 - If the user sends a point that is `decimal` data type, it will convert to a tuple of `float` types.  Updated the readme for clarity  
  * 1.1.0 - Changed `haversine=True` as the default for [`distance_between_points`](#distance_between_points) as it more accurately reflects the small distance calculation I am using in my projects.
  * 1.0.2 - squished an error in the intermediate function. The number of errors has been embarrassing. I hope you won't judge me too harshly.  
  * 1.0.1.post1 - includes a domain checker for `asin()` and `acos()` because rounding errors can cause the function to be out of range.
