@@ -119,10 +119,11 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  
  ## And finally...
  
- Package last updated Jan 14, 2019.  Readme last updated Jan 17, 2019.  
+ Package last updated Mar 4, 2021.  Readme last updated Mar 4, 2021.  
  
  ## Change Log
  
+ * 1.2.0 - If the user sends a point that is `decimal` data type, it will convert to a tuple of `float` types 
  * 1.1.0 - Changed `haversine=True` as the default for [`distance_between_points`](#distance_between_points) as it more accurately reflects the small distance calculation I am using in my projects.
  * 1.0.2 - squished an error in the intermediate function. The number of errors has been embarrassing. I hope you won't judge me too harshly.  
  * 1.0.1.post1 - includes a domain checker for `asin()` and `acos()` because rounding errors can cause the function to be out of range.
