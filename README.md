@@ -17,6 +17,8 @@ Clone/download the package to your project or use `pip install great-circle-calc
  
  ## How to use
  
+The convention of this package is for the spatial points to be represented as a tuple of length 2 with longitude being the first element and latitude being the second element, i.e. `(lon, lat)`.  
+ 
  Here is an outline of the functions available to you. 
  
  ### Library `great_circle_calculator`
