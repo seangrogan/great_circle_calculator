@@ -1,0 +1,13 @@
+LICENSE
+README.md
+setup.py
+great_circle_calculator/__conversion.py
+great_circle_calculator/__error_checking.py
+great_circle_calculator/__init__.py
+great_circle_calculator/_constants.py
+great_circle_calculator/compass.py
+great_circle_calculator/great_circle_calculator.py
+great_circle_calculator.egg-info/PKG-INFO
+great_circle_calculator.egg-info/SOURCES.txt
+great_circle_calculator.egg-info/dependency_links.txt
+great_circle_calculator.egg-info/top_level.txt

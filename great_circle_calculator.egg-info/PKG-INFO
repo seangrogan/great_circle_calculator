@@ -1,3 +1,23 @@
+Metadata-Version: 2.1
+Name: great-circle-calculator
+Version: 1.3.0
+Summary: A collection of functions to calculate attributes of the great circle
+Home-page: https://github.com/seangrogan/great_circle_calculator
+Author: Sean Grogan
+Author-email: sean.grogan@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 4 - Beta
+Classifier: Topic :: Scientific/Engineering :: GIS
+Classifier: Topic :: Utilities
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
 # Great Circle Calculator
 
  This is a collection of equations and formulas that I've been using across my many projects to compute various distances using great circle calculations. The formulas here were adapted into python from [here](https://www.movable-type.co.uk/scripts/latlong.html) and [here](http://www.edwilliams.org/avform.htm).   
