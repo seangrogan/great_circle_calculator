@@ -116,6 +116,7 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  
  ## Change Log
  
+ * 1.3.1 - Put in a line of code when computing the haversine distance to ensure that (due to floating point errors) may be above 1
  * 1.3.0 - Updated the code in the `__error_checking.py` file to, by default, throw errors rather than try to correct points. Also expanded the error messages here to be more clear.
  * 1.2.0 - If the user sends a point that is `decimal` data type, it will convert to a tuple of `float` types.  Updated the readme for clarity  
  * 1.1.0 - Changed `haversine=True` as the default for [`distance_between_points`](#distance_between_points) as it more accurately reflects the small distance calculation I am using in my projects.

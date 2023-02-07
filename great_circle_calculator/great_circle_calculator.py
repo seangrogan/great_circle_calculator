@@ -21,6 +21,7 @@ def distance_between_points(p1, p2, unit='meters', haversine=True):
         # Haversine
         d_lat, d_lon = lat2 - lat1, lon2 - lon1
         a = sin(d_lat / 2) * sin(d_lat / 2) + cos(lat1) * cos(lat2) * sin(d_lon / 2) * sin(d_lon / 2)
+        a = min(1, a)
         c = 2 * atan2(sqrt(a), sqrt((1 - a)))
         dist = r_earth * c
         return dist
