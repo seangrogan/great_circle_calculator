@@ -112,7 +112,7 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  
  ## And finally...
  
- Package last updated Aug 31, 2022.  Readme last updated Aug 31, 2022.  
+ Package last updated Feb 7, 2023.  Readme last updated Feb 7, 2023.  
  
  ## Change Log
  
