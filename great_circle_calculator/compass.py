@@ -42,7 +42,7 @@ class CompassSimple:
 
 
 class CompassComplex:
-    """ This class contains more information then the CompassSimple class.
+    """ This class contains more information than the CompassSimple class.
     Recommended to use import CompassComplex as compass.
     """
     CompassPoint = namedtuple('CompassPoint', ['Point', 'Abbr', 'WindPoint', 'Minimum', 'Direction', 'Maximum'])
@@ -183,14 +183,15 @@ class CompassComplex:
 
 if __name__ == '__main__':
     import math
-    print(CompassComplex.get_point(CompassComplex(), 200))
-    print(CompassComplex.get_point(0))
-    print(CompassComplex.get_point(360))
-    print(CompassComplex.get_point(100))
-    print(CompassComplex.get_point(2 * math.pi))
-    print(CompassComplex.get_point(-15))
-    print(CompassComplex.get_point(-360))
-    print(CompassComplex.get_point(400))
-    print(CompassComplex.get_point(-600))
+    compass = CompassComplex()
+    print(compass.get_point(200))
+    print(compass.get_point(0))
+    print(compass.get_point(360))
+    print(compass.get_point(100))
+    print(compass.get_point(2 * math.pi))
+    print(compass.get_point(-15))
+    print(compass.get_point(-360))
+    print(compass.get_point(400))
+    print(compass.get_point(-600))
     print(CompassComplex.N)
     print(CompassComplex.E.Direction)
