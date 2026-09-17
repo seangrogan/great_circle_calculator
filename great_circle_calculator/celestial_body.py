@@ -34,18 +34,18 @@ class CelestialBody:
         return float(self.radius_meters)
 
     def __eq__(self, other):
-        if not isinstance(other, CelestialBody):
-            return NotImplemented
-        if not isinstance(other, int) or not isinstance(other, float):
-            return NotImplemented
-        return self.radius_meters == other.radius_meters
+        if isinstance(other, CelestialBody):
+            return self.radius_meters == other.radius_meters
+        if isinstance(other, int) or isinstance(other, float):
+            return self.radius_meters == other
+        return NotImplemented
 
     def __lt__(self, other):
-        if not isinstance(other, CelestialBody):
-            return NotImplemented
-        if not isinstance(other, int) or not isinstance(other, float):
-            return NotImplemented
-        return self.radius_meters < other.radius_meters
+        if isinstance(other, CelestialBody):
+            return self.radius_meters < other.radius_meters
+        if isinstance(other, int) or isinstance(other, float):
+            return self.radius_meters < other
+        return NotImplemented
 
 
 
