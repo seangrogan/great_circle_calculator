@@ -12,40 +12,41 @@ Clone/download the package to your project or use `pip install great-circle-calc
  
  ## How to use
  
-The convention of this package is for the spatial points to be represented as a tuple of length 2 with longitude being the first element and latitude being the second element, i.e. `(lon, lat)`.  
+The convention of this package is for the spatial points to be represented as a tuple of length 2 with longitude being the first element and latitude being the second element, i.e. `(lon, lat)`. One should be able to pass a [Shapely]() Point class if the point is in the form of `(lon, lat)` as well.
  
  Here is an outline of the functions available to you. 
  
  ### Library `great_circle_calculator`
  
- Depending on my needs, I will either import this library as 
- 
+ Depending on my needs, I typically import this library as
+
 ```python
 import great_circle_calculator.great_circle_calculator as gcc
 ```
 
-or 
+The functions are 
 
-```python
-from great_circle_calculator.great_circle_calculator import *
-```
-
-where * can be a specific function (or left as * for all the functions)
-
-The functions are [distance_between_points](#distance_between_points), [bearing_at_p1](#bearing_at_p1), [bearing_at_p2](#bearing_at_p2), [midpoint](#midpoint),[ intermediate_point](#intermediate_point), [point_given_start_and_bearing](#point_given_start_and_bearing)
+ * [distance_between_points](#distance_between_points)
+ * [bearing_at_p1](#bearing_at_p1)
+ * [bearing_at_p2](#bearing_at_p2)
+ * [midpoint](#midpoint)
+ * [intermediate_point](#intermediate_point)
+ * [point_given_start_and_bearing](#point_given_start_and_bearing)
 
 #### Function `distance_between_points()`
 
-Function `distance_between_points(p1, p2, unit='meters', haversine=True)` computes the distance between two points in the unit given in the unit parameter.  It will calculate the distance using the law of cosines unless the user specifies `haversine` to be `true`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees (That is, a tuple of float values, the library cannot handle DMS data).  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.  `haversine=True` uses the [haversine](https://en.wikipedia.org/wiki/Haversine_formula) formula, which is consideered superior for short distances (which is my often use case).  Changing it to `haversine=False` yeilds the [law of cosines](https://en.wikipedia.org/wiki/Spherical_law_of_cosines) which, typically, will have a quicker computational time.  
+Function `distance_between_points(p1: Point | tuple, p2: Point | tuple, unit: str = "meters", haversine: bool = True, planet_radius: float | None = None, body: CelestialBody = EARTH)` Computes the distance between two points, in the unit given by the 'unit' parameter. Uses the **haversine** formula unless 'haversine' is set to False, in which case the (typically faster, less precise for short distances) law of cosines is used. `p1`: tuple point of `(lon, lat)`. `p2`: tuple point of `(lon, lat)`.  You can also pass a Shapely `Point` instead of a `tuple`.  `unit`: unit of measurement. See `great_circle_calculator._constants.eligible_units()`.  You can also submit your own units. `haversine`: By default `True` uses [haversine]([haversine](https://en.wikipedia.org/wiki/Haversine_formula)) distance, False uses  [law of cosines](https://en.wikipedia.org/wiki/Spherical_law_of_cosines). `planet_radius`: optional custom sphere radius, expressed in 'unit'. Overrides `body`.  Use this for a quick one-off body without constructing a `CelestialBody`. `body`: which CelestialBody's radius to use if 'planet_radius' isn't given. Defaults to `Earth`; pass e.g. `great_circle_calculator.celestial_body.MARS` to compute distances on Mars. This returns a float which is the distance between p1 and p2, in 'unit'.
+
 
 #### Function `bearing_at_p1()`
 
-Function  `bearing_at_p1(p1, p2)` computes the bearing (i.e. course) at p1 given a destination of p2.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p2()`](#bearing_at_p2) to find the bearing at the endpoint, `p2`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  
+Function  `bearing_at_p1(p1, p2)` computes the bearing (i.e. course, compass direction) at p1 given a destination of p2.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p2()`](#bearing_at_p2) to find the bearing at the endpoint, `p2`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  
 
 Example to find a course enroute:
 
 ```python
 import great_circle_calculator.great_circle_calculator as gcc
+
 """ This code snippit will find the the course at a point p3 which is 20% the way between points p1 and p2
 """
 p1, p2 = (lon1, lat1), (lon2, lat2)
@@ -55,8 +56,19 @@ course_enroute = gcc.bearing_at_p1(gcc.intermediate_point(p1, p2, frac_along_rou
 
 #### Function `bearing_at_p2`
 
-Function  `bearing_at_p2(p1, p2)` computes the bearing (i.e. course) at p2 given a start of p1.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p1()`](#bearing_at_p1) to find the bearing at the starting point, `p1`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  
-        
+Function  `bearing_at_p2(p1, p2)` computes the bearing (i.e. course) at p2 given a start of p1.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p1()`](#bearing_at_p1) to find the bearing at the starting point, `p1`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.
+
+Keep in mind that `bearing_at_p2(p1, p2)` _does not_ show the direction of you standing at `p2` and facing `p1`, but rather as if you're travelling _from_ `p1` to `p2`, what direction would you be facing at `p2` 
+
+Equivalently, you can also determine the direction you are enroute by 
+
+```python
+p1, p2 = (lon1, lat1), (lon2, lat2)
+frac_along_route = 0.2
+course_enroute = gcc.bearing_at_p2(p1, gcc.intermediate_point(p1, p2, frac_along_route))
+```
+
+
 #### Function `midpoint()`
 
 Function `midpoint(p1, p2)` is the half-way point along a great circle path between the two points.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  For example, say `p3 = midpoint(p1, p2)`, `distance_between_points(p1, p3) == distance_between_points(p2, p3)` 
@@ -68,19 +80,51 @@ Function intermediate_point(p1, p2, fraction=0.5) an intermediate point along th
 #### Function `point_given_start_and_bearing()`
         
 Function point_given_start_and_bearing(p1, course, distance, unit='meters') is given a start point `p1`, initial bearing `course`, and distance `distance`, this will calculate the destination point bearing travelling along a (shortest distance) great circle arc.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.
-    
+
+#### Custom units
+
+As of 2.0.0, `unit` is no longer limited to a fixed list. `great_circle_calculator.eligible_units()` returns the currently-registered unit names (a decent default set is built in: meters, kilometers, centimeters, millimeters, miles, feet, inches, yards, nautical_miles, fathoms, furlongs). Add your own with `register_unit`:
+
+```python
+import great_circle_calculator as gcc
+
+gcc.register_unit('sean_step', (2712/(2.14*1000)))  # number of steps I can do per meter
+gcc.distance_between_points(p1, p2, unit='sean_step')
+```
+
+#### Other planetary bodies
+
+`distance_between_points` and `point_given_start_and_bearing` accept a `body` parameter (default `EARTH`) so you can run the same great-circle math on other spheres. `MOON`, `MARS`, `VENUS`, and `MERCURY` are predefined, or build your own `CelestialBody`:
+
+```python
+import great_circle_calculator as gcc
+
+gcc.distance_between_points(p1, p2, unit='kilometers', body=gcc.MARS)
+
+ceres = gcc.CelestialBody('Ceres', radius_meters=470_000)
+gcc.distance_between_points(p1, p2, unit='kilometers', body=ceres)
+```
+
+For a quick one-off sphere without building a `CelestialBody`, pass `radius=` directly (interpreted in `unit`, and it takes priority over `body` if both are given):
+
+```python
+gcc.distance_between_points(p1, p2, unit='kilometers', radius=1000)
+```
+
+`midpoint()` and `intermediate_point()` are calculated without the need for knowing which planet you're on.
+
  ### Library `compass`
  
- This libaray was created to let me call, say `Compass.east` so I can get 90deg.  I thought it helped with code readability at first, kept it because it might be useful...   
+ This library was created to let me call, say `Compass.east` so I can get 90deg.  I thought it helped with code readability at first, kept it because it might be useful...   
  
- It has two classes called `CompassSimple` and `CompassComplex`.  `CompassComplex` is still in the todo list but it contains more information about each compass point.  
+ It has two classes called `CompassSimple` and `CompassComplex`.  `CompassComplex` is still in the todo list, but it contains more information about each compass point.  
  
- To see the eligble points, see [here](https://en.wikipedia.org/wiki/Points_of_the_compass#32_compass_points).  Simply use the terms in "Compass point", use lower case and underscores where there are spaces or dashes.  Alternatively you may use the "Abbreviation" with the appropriate case to call the same value.  
+ To see the eligible points, see [here](https://en.wikipedia.org/wiki/Points_of_the_compass#32_compass_points).  Simply use the terms in "Compass point", use lower case and underscores where there are spaces or dashes.  Alternatively you may use the "Abbreviation" with the appropriate case to call the same value.  
  
  To use `CompassSimple`:
  
  ```python
-import great_circle_calculator.CompassSimple as compass
+import great_circle_calculator.compass.CompassSimple as compass
 
 print(compass.east)  # prints 90
 print(compass.north)  # prints 0
@@ -95,10 +139,10 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  This was created for two purposes:
  
  1) To easily store the radius of the earth in various units
- 
- 2) To simplify the code in the program so I don't have to call `math.*` each time I want sin, cos, etc.
- 
- To see the available units, call `_constants.eligible_units` and a list of the units that are available will be given. 
+
+2) To have thin wrappers for the trig functions in particular for the arcsin and arctan which have domain limits of -1 to 1, and due to floating point errors, numbers can occationally be outside those domain limits and I didn't want the code crashing about this.
+
+   To see the available units, call `_constants.eligible_units` and a list of the units that are available will be given. 
  
  ###### `eligible_units`
  
@@ -112,10 +156,13 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  
  ## And finally...
  
- Package last updated Feb 7, 2023.  Readme last updated Feb 7, 2023.  
+ Package last updated September 2026.  Readme last updated September 2026.  
  
  ## Change Log
- 
+
+ * 2.0.0 - Big version bump and I wanted to add a bunch of things I wanted to a few years ago plus some other things I've learned since then.  The big thing was allowing custom units and custom radii into the formulas. I corrected a few typos here and there and added some type hints.  I'm no software developer but I don't think I've done any code-breaking bugs here.    
+ * 1.5.0 - Units are no longer a fixed list: `register_unit(name, units_per_meter)` lets you add any distance unit, and `eligible_units()` now reflects whatever's registered. Added a `CelestialBody` class plus predefined `EARTH`, `MOON`, `MARS`, `VENUS`, `MERCURY` bodies so `distance_between_points` and `point_given_start_and_bearing` can compute on other planets via `body=`; a one-off custom sphere can also be supplied directly with `radius=`. `intermediate_point` was refactored to compute the central angle directly instead of going through `distance_between_points`/Earth's radius, so it's now body-agnostic by construction. Added type hints throughout (`tuple[float, float]`, PEP 604 unions via `from __future__ import annotations`) targeting Python 3.9+.
+ * 1.4.0 - Pinned support to Python 3.9+ (`python_requires>=3.9`, updated classifiers). `distance_between_points` and `point_given_start_and_bearing` now raise a clear `ValueError` for an unrecognized `unit` instead of silently misbehaving. `intermediate_point` now validates that `fraction` is between 0 and 1, and no longer divides by zero when `p1 == p2`. The package `__init__.py` now re-exports the main functions, so `import great_circle_calculator as gcc; gcc.distance_between_points(...)` works without reaching into `great_circle_calculator_v1`. Fixed a bug in `compass.py`'s demo script (`__main__` block) that called an instance method without an instance.
  * 1.3.1 - Put in a line of code when computing the haversine distance to ensure that (due to floating point errors) may be above 1
  * 1.3.0 - Updated the code in the `__error_checking.py` file to, by default, throw errors rather than try to correct points. Also expanded the error messages here to be more clear.
  * 1.2.0 - If the user sends a point that is `decimal` data type, it will convert to a tuple of `float` types.  Updated the readme for clarity  
