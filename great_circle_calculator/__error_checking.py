@@ -34,12 +34,12 @@ def _error_check_point(point: Point, correct_point: bool = False) -> Point:
     elif -90 <= lon <= 90 and -180 <= lat <= 180:  # The point is (probably!) reversed
         _msg = (
             f"Point {point!s} is probably reversed!\n\n"
-            f"We believe that this is the case because\n"
-            f"the provided longitude ({lon}) is in the range of [-90, 90]\n"
+            f"We believe that this is the case because "
+            f"the provided longitude ({lon}) is in the range of [-90, 90] "
             f"and the provided latitude ({lat}) is in the range of [-180, 180].\n\n"
-            f"The point must be provided as an iterable or tuple of length 2, where the\n"
-            f"first element is the longitude in the range of [-180, 180], and\n"
-            f"the second element is the latitude in the range of [-90, 90].\n"
+            f"The point must be provided as an iterable or tuple of length 2, where the "
+            f"first element is the longitude in the range of [-180, 180], and "
+            f"the second element is the latitude in the range of [-90, 90]."
         )
         if correct_point:
             warnings.warn(_msg)
@@ -52,8 +52,8 @@ def _error_check_point(point: Point, correct_point: bool = False) -> Point:
     else:
         raise ValueError(
             f"\n"
-            f"Point {point!s} cannot be appropriately interpreted in this program.\n"
-            f"Be advised, the point must be provided as a tuple of length 2, where the\n"
-            f"first element is the longitude in the range of [-180, 180], and\n"
+            f"Point {point!s} cannot be appropriately interpreted in this program.\n\n"
+            f"Be advised, the point must be provided as a tuple of length 2, where the "
+            f"first element is the longitude in the range of [-180, 180], and "
             f"the second element is the latitude in the range of [-90, 90]).\n"
         )
