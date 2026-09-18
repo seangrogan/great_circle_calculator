@@ -5,6 +5,7 @@ great_circle_calculator/__conversion.py
 great_circle_calculator/__error_checking.py
 great_circle_calculator/__init__.py
 great_circle_calculator/_constants.py
+great_circle_calculator/celestial_body.py
 great_circle_calculator/compass.py
 great_circle_calculator/great_circle_calculator.py
 great_circle_calculator.egg-info/PKG-INFO
