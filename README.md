@@ -29,12 +29,12 @@ import great_circle_calculator as gcc
 
 The functions are 
 
- * [distance_between_points](#distance_between_points)
- * [bearing_at_p1](#bearing_at_p1)
- * [bearing_at_p2](#bearing_at_p2)
- * [midpoint](#midpoint)
- * [intermediate_point](#intermediate_point)
- * [point_given_start_and_bearing](#point_given_start_and_bearing)
+ * [distance_between_points](#function-distance_between_points)
+ * [bearing_at_p1](#function-bearing_at_p1)
+ * [bearing_at_p2](#function-bearing_at_p2)
+ * [midpoint](#function-midpoint)
+ * [intermediate_point](#function-intermediate_point)
+ * [point_given_start_and_bearing](#function-point_given_start_and_bearing)
 
 #### Function `distance_between_points()`
 
