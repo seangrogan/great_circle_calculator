@@ -20,7 +20,7 @@ from great_circle_calculator.__conversion import _radians_to_degrees
 from great_circle_calculator.__conversion import _degrees_to_radians
 
 
-from great_circle_calculator.__error_checking import Point, _error_check_point
+from great_circle_calculator.__error_checking import Point, _error_check_point, _format_output
 from great_circle_calculator.celestial_body import CelestialBody, EARTH
 
 from great_circle_calculator._constants import sin, asin, cos, acos, atan2, sqrt
@@ -56,7 +56,8 @@ def distance_between_points(
     unit: str = "meters",
     haversine: bool = True,
     planet_radius: float | None = None,
-    body: CelestialBody = EARTH
+    body: CelestialBody = EARTH,
+    lat_lon: bool = False
 ) -> float:
     """Computes the distance between two points, in the unit given by the 'unit' parameter.
     Uses the haversine formula unless 'haversine' is set to False, in which case the
@@ -70,13 +71,14 @@ def distance_between_points(
         use this for a quick one-off body without constructing a CelestialBody.
     :param body: which CelestialBody's radius to use if 'planet_radius' isn't given. Defaults to
         Earth; pass e.g. 'great_circle_calculator.celestial_body.MARS' to compute distances on Mars.
+    :param lat_lon: bool, if true interprets p1 and p2 as (lat, lon)
     :return: Distance between p1 and p2, in 'unit'.
 
     New for version 2: can pass a Shapely Point class if that's how your data is stored.  You can also
     pass different radius or celestial body
     """
-    lon1, lat1 = _point_to_radians(_error_check_point(p1))
-    lon2, lat2 = _point_to_radians(_error_check_point(p2))
+    lon1, lat1 = _point_to_radians(_error_check_point(p1, lat_lon=lat_lon))
+    lon2, lat2 = _point_to_radians(_error_check_point(p2, lat_lon=lat_lon))
     r = _resolve_radius(unit, planet_radius, body)
     if haversine:
         c = _central_angle(lat1, lon1, lat2, lon2)
@@ -85,24 +87,33 @@ def distance_between_points(
     return acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)) * r
 
 
-def bearing_at_p1(p1: Point, p2: Point) -> float:
+def bearing_at_p1(
+        p1: tuple | Point,
+        p2: tuple | Point,
+        lat_lon: bool = False
+) -> float:
     """Computes the bearing (i.e. course) at p1 given a destination of p2. Use in conjunction
     with midpoint() and intermediate_point() to find the course along the route. Use
     bearing_at_p2() to find the bearing at the endpoint.
 
     :param p1: tuple point of (lon, lat)
     :param p2: tuple point of (lon, lat)
+    :param lat_lon: bool, if true interprets p1 and p2 as (lat, lon)
     :return: Course, in degrees
     """
-    lon1, lat1 = _point_to_radians(_error_check_point(p1))
-    lon2, lat2 = _point_to_radians(_error_check_point(p2))
+    lon1, lat1 = _point_to_radians(_error_check_point(p1, lat_lon=lat_lon))
+    lon2, lat2 = _point_to_radians(_error_check_point(p2, lat_lon=lat_lon))
     x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2 - lon1)
     y = sin(lon2 - lon1) * cos(lat2)
     course = atan2(y, x)
     return _radians_to_degrees(course)
 
 
-def bearing_at_p2(p1: Point, p2: Point) -> float:
+def bearing_at_p2(
+        p1: tuple | Point,
+        p2: tuple | Point,
+        lat_lon: bool = False
+) -> float:
     """Computes the bearing (i.e. course) at p2 given a starting point of p1. Use in
     conjunction with midpoint() and intermediate_point() to find the course along the route.
     Use bearing_at_p1() to find the bearing at the starting point.
@@ -112,30 +123,41 @@ def bearing_at_p2(p1: Point, p2: Point) -> float:
 
     :param p1: tuple point of (lon, lat)
     :param p2: tuple point of (lon, lat)
+    :param lat_lon: bool, if true interprets p1 and p2 as (lat, lon)
     :return: Course, in degrees
     """
-    return (bearing_at_p1(p2, p1) + 180) % 360
+    return (bearing_at_p1(p2, p1, lat_lon=lat_lon) + 180) % 360
 
 
-def midpoint(p1: Point, p2: Point) -> Point:
+def midpoint(
+        p1: tuple | Point,
+        p2: tuple | Point,
+        lat_lon: bool = False
+) -> Point:
     """The half-way point along a great circle path between the two points.
 
     :param p1: tuple point of (lon, lat)
     :param p2: tuple point of (lon, lat)
+    :param lat_lon: bool, if true interprets p1 and p2 as (lat, lon)
     :return: point (lon, lat)
     """
-    lon1, lat1 = _point_to_radians(_error_check_point(p1))
-    lon2, lat2 = _point_to_radians(_error_check_point(p2))
+    lon1, lat1 = _point_to_radians(_error_check_point(p1, lat_lon=lat_lon))
+    lon2, lat2 = _point_to_radians(_error_check_point(p2, lat_lon=lat_lon))
     b_x = cos(lat2) * cos(lon2 - lon1)
     b_y = cos(lat2) * sin(lon2 - lon1)
     lat3 = atan2(sin(lat1) + sin(lat2), sqrt((cos(lat1) + b_x) * (cos(lat1) + b_x) + b_y * b_y))
     lon3 = lon1 + atan2(b_y, cos(lat1) + b_x)
     lat3 = _radians_to_degrees(lat3)
     lon3 = (_radians_to_degrees(lon3) + 540) % 360 - 180
-    return lon3, lat3
+    return _format_output((lon3, lat3), lat_lon)
 
 
-def intermediate_point(p1: Point, p2: Point, fraction: float = 0.5) -> Point:
+def intermediate_point(
+        p1: tuple | Point,
+        p2: tuple | Point,
+        fraction: float = 0.5,
+        lat_lon: bool = False
+) -> Point:
     """Calculates the intermediate point along the course laid out by p1 to p2. 'fraction'
     is the fraction of the distance between p1 and p2, where 0 is p1, 0.5 is equivalent to
     midpoint(), and 1 is p2. This is independent of any sphere's radius, so it works the same
@@ -144,16 +166,17 @@ def intermediate_point(p1: Point, p2: Point, fraction: float = 0.5) -> Point:
     :param p1: tuple point of (lon, lat)
     :param p2: tuple point of (lon, lat)
     :param fraction: the fraction of the distance along the path. Must be between 0 and 1.
+    :param lat_lon: bool, if true interprets p1 and p2 as (lat, lon)
     :return: point (lon, lat)
     """
     if not 0 <= fraction <= 1:
         raise ValueError(f"fraction must be between 0 and 1 (inclusive); got {fraction}")
-    lon1, lat1 = _point_to_radians(_error_check_point(p1))
-    lon2, lat2 = _point_to_radians(_error_check_point(p2))
+    lon1, lat1 = _point_to_radians(_error_check_point(p1, lat_lon=lat_lon))
+    lon2, lat2 = _point_to_radians(_error_check_point(p2, lat_lon=lat_lon))
     delta = _central_angle(lat1, lon1, lat2, lon2)
     if delta == 0:
         # p1 and p2 are the same point; any fraction returns that point.
-        return _point_to_degrees((lon1, lat1))
+        return _format_output(_point_to_degrees((lon1, lat1)), lat_lon)
     a = sin((1 - fraction) * delta) / sin(delta)
     b = sin(fraction * delta) / sin(delta)
     x = a * cos(lat1) * cos(lon1) + b * cos(lat2) * cos(lon2)
@@ -161,7 +184,7 @@ def intermediate_point(p1: Point, p2: Point, fraction: float = 0.5) -> Point:
     z = a * sin(lat1) + b * sin(lat2)
     lat3 = atan2(z, sqrt(x * x + y * y))
     lon3 = atan2(y, x)
-    return _point_to_degrees((lon3, lat3))
+    return _format_output(_point_to_degrees((lon3, lat3)), lat_lon)
 
 
 def point_given_start_and_bearing(
@@ -171,6 +194,7 @@ def point_given_start_and_bearing(
     unit: str = "meters",
     planet_radius: float | None = None,
     body: CelestialBody = EARTH,
+    lat_lon: bool = False
 ) -> Point:
     """Given a start point, initial bearing, and distance, calculates the destination point
     reached by traveling along a (shortest-distance) great circle arc.
@@ -181,14 +205,15 @@ def point_given_start_and_bearing(
     :param unit: unit of measurement for 'distance'. See _constants.eligible_units()
     :param planet_radius: optional custom sphere radius, expressed in 'unit'. Overrides 'body'.
     :param body: which CelestialBody's radius to use if 'radius' isn't given. Defaults to Earth.
+    :param lat_lon: bool, if true interprets p1 and p2 as (lat, lon)
     :return: point (lon, lat)
     """
-    lon1, lat1 = _point_to_radians(_error_check_point(p1))
+    lon1, lat1 = _point_to_radians(_error_check_point(p1, lat_lon=lat_lon))
     bearing = _degrees_to_radians(course)
     r = _resolve_radius(unit, planet_radius, body)
     delta = distance / r
     lat2 = asin(sin(lat1) * cos(delta) + cos(lat1) * sin(delta) * cos(bearing))
     lon2 = lon1 + atan2(sin(bearing) * sin(delta) * cos(lat1), cos(delta) - sin(lat1) * sin(lat2))
     lon2 = (_radians_to_degrees(lon2) + 540) % 360 - 180
-    return lon2, _radians_to_degrees(lat2)
+    return _format_output((lon2, _radians_to_degrees(lat2)), lat_lon)
 

@@ -24,8 +24,14 @@ def _handle_point(obj):
         raise TypeError(f"Cannot interpret {type(obj)} as a point")
     return x, y
 
-def _error_check_point(point: Point, correct_point: bool = False) -> Point:
+def _format_output(point: Point, lat_lon: bool) -> Point:
+    """Flip an internal (lon, lat) result back to (lat, lon) if the caller works that way."""
+    return (point[1], point[0]) if lat_lon else point
+
+def _error_check_point(point: Point, correct_point: bool = False, lat_lon: bool = False) -> Point:
     point = _handle_point(point)
+    if lat_lon:
+        point = point[1], point[0]   # caller gave (lat, lon); flip to internal (lon, lat)
     if len(point) != 2:
         raise TypeError(f"Point {point!s} is incorrect length!")
     lon, lat = float(point[0]), float(point[1])
