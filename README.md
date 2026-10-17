@@ -17,7 +17,7 @@ Clone/download the package to your project or use `pip install great-circle-calc
  
 The convention of this package is for the spatial points to be represented as a tuple of length 2 with longitude being the first element and latitude being the second element, i.e. `(lon, lat)`. One should be able to pass a [Shapely](https://pypi.org/project/shapely/) [Point](https://shapely.readthedocs.io/en/stable/reference/shapely.Point.html) object if the point is in the form of `(lon, lat)` as well.
 
-** NEW FOR 2.1** : functions that take a point or return a point now have the parameter `lat_lon`.  Set `lat_lon=True` to pass points in the form `(lat, lon)`.
+**NEW FOR 2.1** : functions that take a point or return a point now have the parameter `lat_lon`.  Set `lat_lon=True` to pass points in the form `(lat, lon)`.
  
  Here is an outline of the functions available to you. 
  
