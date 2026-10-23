@@ -40,8 +40,47 @@ The functions are
 
 #### Function `distance_between_points()`
 
-Function `distance_between_points(p1: Point | tuple, p2: Point | tuple, unit: str = "meters", haversine: bool = True, planet_radius: float | None = None, body: CelestialBody = EARTH)` Computes the distance between two points, in the unit given by the 'unit' parameter. Uses the **haversine** formula unless `haversine=False`, in which case the (typically faster, less precise for short distances) law of cosines is used. `p1`: tuple point of `(lon, lat)`. `p2`: tuple point of `(lon, lat)`.  You can also pass a Shapely `Point` instead of a `tuple`.  `unit`: unit of measurement. See `great_circle_calculator._constants.eligible_units()`.  You can also submit your own units. `planet_radius`: optional custom sphere radius, expressed in `unit` (Although `unit` has no effect if `planet_radius` is given). Parameter `planet_radius` Overrides `body`.  Use this for a quick one-off body without constructing a `CelestialBody`. `body`: which CelestialBody's radius to use if 'planet_radius' isn't given. Defaults to `EARTH`; pass e.g. `elestial_body.MARS` to compute distances on Mars. This returns a float which is the distance between p1 and p2, in 'unit'.
+Function 
+```python
+distance_between_points(
+    p1: Point | tuple,
+    p2: Point | tuple,
+    unit: str = "meters",
+    haversine: bool = True,  # False for law of cosines
+    planet_radius: float | None = None,
+    body: CelestialBody = EARTH,
+    lat_lon: bool = False
+)
+```
 
+Computes the distance between two points, in the unit given by the 'unit' parameter. 
+
+Uses the **haversine** formula unless `haversine=False`, in which case the (typically faster, less precise for short distances) law of cosines is used. 
+
+`p1`: tuple point of `(lon, lat)`. `p2`: tuple point of `(lon, lat)`.  **New for 2.1** Pass `lat_lon = True` to submit points as `(lat, lon)`. You can also pass a Shapely `Point` instead of a `tuple`.  
+
+`unit`: unit of measurement. See `great_circle_calculator._constants.eligible_units()`.  You can also submit your own units. 
+
+`planet_radius`: optional custom sphere radius, expressed in `unit` (Although `unit` has no effect if `planet_radius` is given, as the output will be in the units of the input unit). Parameter `planet_radius` Overrides `body`.  Use this for a quick one-off body without constructing a `CelestialBody`. 
+
+`body`: which CelestialBody's radius to use if 'planet_radius' isn't given. Defaults to `EARTH`; pass e.g. `elestial_body.MARS` to compute distances on Mars. This returns a float which is the distance between `p1` and `p2`, in 'unit'.
+
+Example: 
+
+```python
+import great_circle_calculator as gcc
+
+p1 = (-73.569494, 45.496181)
+p2 = (-73.993531, 40.750655)
+d1 = gcc.distance_between_points(p1, p2)
+print(d1) # 528797.1333940749
+d2 = gcc.distance_between_points(p1, p2, haversine=False)
+print(d2) # 528797.1333940765
+d3 = gcc.distance_between_points(p1, p2, unit='nautical_miles')
+print(d3) # 285.5276098240145
+d4 = gcc.distance_between_points(p1, p2, body=gcc.celestial_body.GANYMEDE)
+print(d4) # 218632.0089583005
+```
 
 #### Function `bearing_at_p1()`
 
