@@ -72,12 +72,16 @@ import great_circle_calculator as gcc
 
 p1 = (-73.569494, 45.496181)
 p2 = (-73.993531, 40.750655)
+
 d1 = gcc.distance_between_points(p1, p2)
 print(d1) # 528797.1333940749
+
 d2 = gcc.distance_between_points(p1, p2, haversine=False)
 print(d2) # 528797.1333940765
+
 d3 = gcc.distance_between_points(p1, p2, unit='nautical_miles')
 print(d3) # 285.5276098240145
+
 d4 = gcc.distance_between_points(p1, p2, body=gcc.celestial_body.GANYMEDE)
 print(d4) # 218632.0089583005
 ```
