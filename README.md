@@ -3,8 +3,10 @@
  This is a collection of equations and formulas that I've been using across my many projects to compute various distances using great circle calculations. The formulas here were adapted into python from [here](https://www.movable-type.co.uk/scripts/latlong.html) and [here](http://www.edwilliams.org/avform.htm).   
  
  Because I've been using these equations across several projects, I decided to upload this to PyPI for ease of keeping updated and distribution. Feel free to clone, fork, or modify the code as needed.  I believe there are more complete packages out there.  One example is [geodesy](https://github.com/chrisveness/geodesy).  
+
+ Part of the goal of this package was to be readily inspectable and self contained. There are no other dependencies required for this package to run.  
  
- Any questions, feel free to get in touch.
+ Any questions, feel free to get in touch. Email and/or submit a bug report if you see any bugs.  
  
  ## How to install
  
@@ -29,6 +31,8 @@ The convention of this package is for the spatial points to be represented as a 
 import great_circle_calculator as gcc
 ```
 
+Although this convention does not need to be followed.  I will be using this convention in the samples below.  
+
 The functions are 
 
  * [distance_between_points](#function-distance_between_points)
@@ -43,8 +47,8 @@ The functions are
 Function 
 ```python
 distance_between_points(
-    p1: Point | tuple,
-    p2: Point | tuple,
+    p1: tuple | Point,
+    p2: tuple | Point,
     unit: str = "meters",
     haversine: bool = True,  # False for law of cosines
     planet_radius: float | None = None,
@@ -59,9 +63,9 @@ Uses the **haversine** formula unless `haversine=False`, in which case the (typi
 
 `p1`: tuple point of `(lon, lat)`. `p2`: tuple point of `(lon, lat)`.  **New for 2.1** Pass `lat_lon = True` to submit points as `(lat, lon)`. You can also pass a Shapely `Point` instead of a `tuple`.  
 
-`unit`: unit of measurement. See `great_circle_calculator._constants.eligible_units()`.  You can also submit your own units. 
+`unit`: unit of measurement. See `great_circle_calculator._constants.eligible_units()`.  You can also submit your own units. Typically full spellings are acceptable (`'kilometers'` or `'miles'`), American or British spellings are tolerated (`'meters'` or `'metres'`). Abbrivations can be passed.  I made the executive decision that `'nm'` is nautical miles rather than nanometers. Also Also keep in mind that a nautical mile here is defined as the international nautical mile. 
 
-`planet_radius`: optional custom sphere radius, expressed in `unit` (Although `unit` has no effect if `planet_radius` is given, as the output will be in the units of the input unit). Parameter `planet_radius` Overrides `body`.  Use this for a quick one-off body without constructing a `CelestialBody`. 
+`planet_radius`: optional custom sphere radius, expressed in `unit` (Although `unit` has no effect if `planet_radius` is given, as the output will be in the units of the input unit). Parameter `planet_radius` Overrides `body`.  Use this when you don't want to construct a `CelestialBody`. 
 
 `body`: which CelestialBody's radius to use if 'planet_radius' isn't given. Defaults to `EARTH`; pass e.g. `elestial_body.MARS` to compute distances on Mars. This returns a float which is the distance between `p1` and `p2`, in 'unit'.
 
@@ -73,37 +77,40 @@ import great_circle_calculator as gcc
 p1 = (-73.569494, 45.496181)
 p2 = (-73.993531, 40.750655)
 
+# Standard Calculation
 d1 = gcc.distance_between_points(p1, p2)
 print(d1) # 528797.1333940749
 
+# Using Law of Cosines, small difference at this distance at far too many significant figures to matter
 d2 = gcc.distance_between_points(p1, p2, haversine=False)
 print(d2) # 528797.1333940765
 
+# Using the nautical mile
 d3 = gcc.distance_between_points(p1, p2, unit='nautical_miles')
 print(d3) # 285.5276098240145
 
+# What if the same points were on Ganymede?
 d4 = gcc.distance_between_points(p1, p2, body=gcc.celestial_body.GANYMEDE)
 print(d4) # 218632.0089583005
 ```
 
 #### Function `bearing_at_p1()`
 
-Function  `bearing_at_p1(p1, p2)` computes the bearing (i.e. course, compass direction) at p1 given a destination of p2.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p2()`](#bearing_at_p2) to find the bearing at the endpoint, `p2`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat).   
+```python
+bearing_at_p1(
+        p1: tuple | Point,
+        p2: tuple | Point,
+        lat_lon: bool = False
+) -> float:
+```
+
+Function  `bearing_at_p1(p1, p2)` computes the bearing (course, compass direction) at p1 given a destination of p2.  Use in conjunction with [`midpoint()`](#function-midpoint) and/or[`intermediate_point()`](#function-intermediate_point) to find the course along the route.  Use [`bearing_at_p2()`](#function-bearing_at_p2) to find the bearing at the endpoint, `p2`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat). **New for 2.1** Pass `lat_lon = True` to submit points as `(lat, lon)`. You can also pass a Shapely `Point` instead of a `tuple`.
 
 #### Function `bearing_at_p2`
 
-Function  `bearing_at_p2(p1, p2)` computes the bearing (i.e. course) at p2 given a start of p1.  Use in conjunction with [`midpoint()`](#midpoint) and [`intermediate_point()`](#intermediate_point) to find the course along the route.  Use [`bearing_at_p1()`](#bearing_at_p1) to find the bearing at the starting point, `p1`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.
+Function  `bearing_at_p2(p1, p2)` computes the bearing (i.e. course) at p2 given a start of p1.
 
 Keep in mind that `bearing_at_p2(p1, p2)` _does not_ show the direction of you standing at `p2` and facing `p1`, but rather as if you're traveling _from_ `p1` to `p2`, what direction would you be facing at `p2` 
-
-Equivalently, you can also determine the direction you are enroute by 
-
-```python
-p1, p2 = (lon1, lat1), (lon2, lat2)
-frac_along_route = 0.2
-course_enroute = gcc.bearing_at_p2(p1, gcc.intermediate_point(p1, p2, frac_along_route))
-```
-
 
 #### Function `midpoint()`
 
@@ -186,6 +193,22 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
  ###### `eligible_units`
  
  To see the available units, call `_constants.eligible_units` and a list of the units that are available will be given. 
+
+ The `eligible_units` can also have, by default, common aliases and some alternate spellings.  
+
+| Unit | Factor | Alaises |
+| --- | --- | --- |
+| meters | 1.0 | m, meter, metre, metres |
+| kilometers | 1/1000 | km, kilometer, kilometre, kilometres |
+| centimeters | 100.0 | cm, centimeter, centimetre, centimetres |
+| millimeters | 1000.0 | mm, millimeter, millimetre, millimetres |
+| miles | 1/1609.344 | mi, mile |
+| feet | 3.28084 | ft, foot |
+| inches | 39.3701 | in, inch |
+| yards | 1.09361 | yd, yard |
+| nautical_miles | 1/1852 | nautical_mile, nauticalmile, nm, nmi, nautical_mile |
+| fathoms | 1/1.8288 | ftm, fathom |
+| furlongs | 1/201.168 | furlong, |
  
  ### Libraries  `__conversion` and `__error_checking`
  
@@ -196,6 +219,8 @@ The error checking library (`__error_checking.py`) is used to ensure that the po
 The second is that the information contained within the tuple matches the expected range of latitude and longitude. The first element of the `tuple` should be the longitude in the range of [-180, 180] and the second element is the latitude in the range of [-90, 90].  
 
 If this check fails, but it appears that the user has "flipped" the elements of the point (i.e. (lat, lon) is provided), a `ValueError` is thrown with information indicating the belief you have flipped the elements of the coordinates.  If this is not true, `ValueError` is thrown with a different error message indicating the expected input.
+
+Keep in mind that there is a lon-lat lat-lon flipper in the functions.  
 
  ## And finally...
 
