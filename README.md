@@ -119,7 +119,7 @@ print(b1) # 57.06... about East North East
 #### Function `bearing_at_p2`
 
 ```python
-bearing_at_p1(
+bearing_at_p2(
         p1: tuple | Point,
         p2: tuple | Point,
         lat_lon: bool = False
@@ -143,7 +143,30 @@ print(b2) # 116.61... about East South East
 
 #### Function `midpoint()`
 
-Function `midpoint(p1, p2)` is the half-way point along a great circle path between the two points.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat) in decimal degrees.  For example, say `p3 = midpoint(p1, p2)`, `distance_between_points(p1, p3) == distance_between_points(p2, p3)` (although considering floating point maths, these will be close if not equal)
+```python
+midpoint(
+        p1: tuple | Point,
+        p2: tuple | Point,
+        lat_lon: bool = False
+) -> Point:
+    
+```
+
+Function `midpoint(p1, p2)` is the half-way point along a great circle path between the two points.  `p1` and `p2` are points (i.e. tuples, lists of length 2, shapely points) in the form of (lon, lat) in decimal degrees. You can pass `lat_lon=True` to pass a point in the form of `lat, lon` For example, say 
+```python
+import great_circle_calculator as gcc
+
+p1 = (-73.596622, 45.503519)
+p2 = (  2.294895, 48.858060)
+
+p3 = gcc.midpoint(p1, p2)
+# We would expect
+# distance_between_points(p1, p3) == distance_between_points(p2, p3)
+# although considering floating point maths, these will be close if not equal
+eps = pow(10, -6) # epsilon
+assert abs(gcc.distance_between_points(p1, p3) - gcc.distance_between_points(p2, p3)) <= eps
+print(abs(gcc.distance_between_points(p1, p3) - gcc.distance_between_points(p2, p3)) <= eps)
+```
 
 #### Function `intermediate_point()`
 
