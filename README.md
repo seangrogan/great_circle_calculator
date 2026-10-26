@@ -106,11 +106,40 @@ bearing_at_p1(
 
 Function  `bearing_at_p1(p1, p2)` computes the bearing (course, compass direction) at p1 given a destination of p2.  Use in conjunction with [`midpoint()`](#function-midpoint) and/or[`intermediate_point()`](#function-intermediate_point) to find the course along the route.  Use [`bearing_at_p2()`](#function-bearing_at_p2) to find the bearing at the endpoint, `p2`.  `p1` and `p2` are points (i.e. tuples, lists of length 2) in the form of (lon, lat). **New for 2.1** Pass `lat_lon = True` to submit points as `(lat, lon)`. You can also pass a Shapely `Point` instead of a `tuple`.
 
+```python
+import great_circle_calculator as gcc
+
+p1 = (-73.596622, 45.503519)
+p2 = (  2.294895, 48.858060)
+
+b1 = gcc.bearing_at_p1(p1, p2)
+print(b1) # 57.06... about East North East
+``` 
+
 #### Function `bearing_at_p2`
+
+```python
+bearing_at_p1(
+        p1: tuple | Point,
+        p2: tuple | Point,
+        lat_lon: bool = False
+) -> float:
+```
 
 Function  `bearing_at_p2(p1, p2)` computes the bearing (i.e. course) at p2 given a start of p1.
 
-Keep in mind that `bearing_at_p2(p1, p2)` _does not_ show the direction of you standing at `p2` and facing `p1`, but rather as if you're traveling _from_ `p1` to `p2`, what direction would you be facing at `p2` 
+Keep in mind that `bearing_at_p2(p1, p2)` _does not_ show the direction of you standing at `p2` and facing `p1`, but rather as if you're traveling _from_ `p1` to `p2`, what direction would you be facing at `p2` **New for 2.1** Pass `lat_lon = True` to submit points as `(lat, lon)`. You can also pass a Shapely `Point` instead of a `tuple`.
+
+```python
+import great_circle_calculator as gcc
+
+p1 = (-73.596622, 45.503519)
+p2 = (  2.294895, 48.858060)
+
+b2 = gcc.bearing_at_p1(p1, p2)
+print(b2) # 116.61... about East South East
+``` 
+
 
 #### Function `midpoint()`
 
