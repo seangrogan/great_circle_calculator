@@ -170,7 +170,37 @@ print(abs(gcc.distance_between_points(p1, p3) - gcc.distance_between_points(p2, 
 
 #### Function `intermediate_point()`
 
-Function intermediate_point(p1, p2, fraction=0.5) an intermediate point along the course laid out by `p1` to `p2` given the fractional distance.  `fraction` is the fraction of the distance between `p1` and `p2`, where 0 is `p1`, 0.5 is equivalent to [`midpoint()`](#midpoint), and 1 is `p2`.  
+```python
+intermediate_point(
+        p1: tuple | Point,
+        p2: tuple | Point,
+        fraction: float = 0.5,
+        lat_lon: bool = False
+) -> Point
+```
+
+Function `intermediate_point(p1, p2, fraction=0.5)` an intermediate point along the course laid out by `p1` to `p2` given the fraction value of the  distance between p1 and p2.  `fraction` is the fraction of the distance between `p1` and `p2`, where 0 is `p1`, 0.5 is equivalent to [`midpoint()`](#function-midpoint), and 1 is `p2`. `0.15` is 15% the way between `p1` and `p2`
+
+This can be used in conjunction with the `bearing_at_p1()` or `_p2()` function to get the course en route between p1 and p2.
+
+```python
+import great_circle_calculator as gcc
+
+p1 = (-73.596622, 45.503519)
+p2 = (2.294895, 48.858060)
+
+point = gcc.intermediate_point(p1, p2, (1.0/3.0))
+print(f"10% of the way: {point}\n")
+
+print(f"{'Leg':>3}  {'Bearing':>8}  {'Distance':>9}")
+print("-" * 24)
+
+for leg in range(11):
+    p3 = gcc.intermediate_point(p1, p2, leg / 10)
+    bearing = gcc.bearing_at_p1(p3, p2)
+    distance = gcc.distance_between_points(p1, p3, unit="nmi")
+    print(f"{leg:>3}  {bearing:>7.2f}°  {distance:>6.0f} NMi")
+```
 
 #### Function `point_given_start_and_bearing()`
         
