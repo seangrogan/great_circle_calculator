@@ -51,8 +51,8 @@ def _central_angle(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 
 
 def distance_between_points(
-    p1: Point | tuple,
-    p2: Point | tuple,
+    p1: tuple | Point,
+    p2: tuple | Point,
     unit: str = "meters",
     haversine: bool = True,
     planet_radius: float | None = None,
@@ -188,7 +188,7 @@ def intermediate_point(
 
 
 def point_given_start_and_bearing(
-    p1: Point,
+    p1: tuple | Point,
     course: float,
     distance: float,
     unit: str = "meters",

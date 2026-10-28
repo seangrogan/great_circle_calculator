@@ -2,9 +2,9 @@
 
  This is a collection of equations and formulas that I've been using across my many projects to compute various distances using great circle calculations. The formulas here were adapted into python from [here](https://www.movable-type.co.uk/scripts/latlong.html) and [here](http://www.edwilliams.org/avform.htm).   
  
- Because I've been using these equations across several projects, I decided to upload this to PyPI for ease of keeping updated and distribution. Feel free to clone, fork, or modify the code as needed.  I believe there are more complete packages out there.  One example is [geodesy](https://github.com/chrisveness/geodesy).  
+ Because I used these formulas and functions across several projects, I decided to upload this to PyPI for ease of keeping updated and distribution. Feel free to clone, fork, or modify the code as needed.  I believe there are more complete packages out there.  One example is [geodesy](https://github.com/chrisveness/geodesy).  
 
- Part of the goal of this package was to be readily inspectable and self contained. There are no other dependencies required for this package to run.  
+ Part of the goal of this package was to be readily inspectable and self-contained. There are no other dependencies required for this package to run.  
  
  Any questions, feel free to get in touch. Email and/or submit a bug report if you see any bugs.  
  
@@ -63,9 +63,9 @@ Uses the **haversine** formula unless `haversine=False`, in which case the (typi
 
 `p1`: tuple point of `(lon, lat)`. `p2`: tuple point of `(lon, lat)`.  **New for 2.1** Pass `lat_lon = True` to submit points as `(lat, lon)`. You can also pass a Shapely `Point` instead of a `tuple`.  
 
-`unit`: unit of measurement. See `great_circle_calculator._constants.eligible_units()`.  You can also submit your own units. Typically full spellings are acceptable (`'kilometers'` or `'miles'`), American or British spellings are tolerated (`'meters'` or `'metres'`). Abbrivations can be passed.  I made the executive decision that `'nm'` is nautical miles rather than nanometers. Also Also keep in mind that a nautical mile here is defined as the international nautical mile. 
+`unit`: unit of measurement. See `great_circle_calculator._constants.eligible_units()`.  You can also submit your own units. Typically full spellings are acceptable (`'kilometers'` or `'miles'`), American or British spellings are tolerated (`'meters'` or `'metres'`). Typical abbreviations can be passed.  I made the executive decision that `'nm'` is nautical miles rather than nanometers. Also keep in mind that a nautical mile here is defined as the international nautical mile, not the number of minutes at the equator. 
 
-`planet_radius`: optional custom sphere radius, expressed in `unit` (Although `unit` has no effect if `planet_radius` is given, as the output will be in the units of the input unit). Parameter `planet_radius` Overrides `body`.  Use this when you don't want to construct a `CelestialBody`. 
+`planet_radius`: optional custom sphere radius, expressed in itself units (`unit` has no effect if `planet_radius` is given, as the output will be in the units of the planet radius unit). Parameter `planet_radius` Overrides `body`.  Use this when you don't want to construct a `CelestialBody`. 
 
 `body`: which CelestialBody's radius to use if 'planet_radius' isn't given. Defaults to `EARTH`; pass e.g. `elestial_body.MARS` to compute distances on Mars. This returns a float which is the distance between `p1` and `p2`, in 'unit'.
 
@@ -162,10 +162,12 @@ p2 = (  2.294895, 48.858060)
 p3 = gcc.midpoint(p1, p2)
 # We would expect
 # distance_between_points(p1, p3) == distance_between_points(p2, p3)
-# although considering floating point maths, these will be close if not equal
+# although considering floating point maths, these will be close but likely not equal
+
 eps = pow(10, -6) # epsilon
 assert abs(gcc.distance_between_points(p1, p3) - gcc.distance_between_points(p2, p3)) <= eps
 print(abs(gcc.distance_between_points(p1, p3) - gcc.distance_between_points(p2, p3)) <= eps)
+print(abs(gcc.distance_between_points(p1, p3) - gcc.distance_between_points(p2, p3)))
 ```
 
 #### Function `intermediate_point()`
@@ -190,7 +192,7 @@ p1 = (-73.596622, 45.503519)
 p2 = (2.294895, 48.858060)
 
 point = gcc.intermediate_point(p1, p2, (1.0/3.0))
-print(f"10% of the way: {point}\n")
+print(f"33.3% of the way: {point}\n")
 
 print(f"{'Leg':>3}  {'Bearing':>8}  {'Distance':>9}")
 print("-" * 24)
@@ -203,8 +205,36 @@ for leg in range(11):
 ```
 
 #### Function `point_given_start_and_bearing()`
-        
-Function point_given_start_and_bearing(p1, course, distance, unit='meters') is given a start point `p1`, initial bearing `course`, and distance `distance`, this will calculate the destination point bearing travelling along a (shortest distance) great circle arc.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.
+
+```python
+point_given_start_and_bearing(
+    p1: tuple | Point,
+    course: float,
+    distance: float,
+    unit: str = "meters",
+    planet_radius: float | None = None,
+    body: CelestialBody = EARTH,
+    lat_lon: bool = False
+) -> Point
+```
+
+Function `point_given_start_and_bearing()` is given a start point `p1`, initial bearing `course`, and distance `distance`, this will calculate the destination point bearing travelling along a (shortest distance) great circle arc.  `unit` is a unit of measurement that can be accessed by [`great_circle_calculator.constants.eligible_units`](#eligible_units), default is `'meters'`.
+
+```python
+import great_circle_calculator as gcc
+p1 = (-73.596622, 45.503519)
+d = 100
+bearings = [180, 270, 0, 90]
+
+p_last = p1
+print(p1)
+for bearing in bearings:
+    p_next = gcc.point_given_start_and_bearing(p_last, bearing, d, unit="km")
+    print(f"{p_next}")
+    p_last = p_next
+print()
+print(gcc.distance_between_points(p1, p_next), "m")
+```
 
 #### Custom units
 
@@ -292,7 +322,9 @@ print(compass.SWbS == compass.southwest_by_south)  # prints True
 | fathoms | 1/1.8288 | ftm, fathom |
 | furlongs | 1/201.168 | furlong |
 
-Please note, the nautical mile unit is an international nautical mile.  
+Please note, the nautical mile unit is an international nautical mile. 
+
+*Factor* is what is multiplied to the meter distance to get the alternative unit.  
  
  ### Libraries  `__conversion` and `__error_checking`
  
@@ -308,7 +340,7 @@ Keep in mind that there is a lon-lat lat-lon flipper in the functions.
 
  ## And finally...
 
- Package last updated October 2026.  Readme last updated October 2026.  
+ Package last updated October 2026.  Readme last updated October 28, 2026.  
  
  ## Change Log
 
